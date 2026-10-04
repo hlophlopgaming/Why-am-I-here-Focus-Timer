@@ -50,18 +50,6 @@ node --test tests/*.cjs
 
 Tests simulate browser APIs and do not replace testing in Firefox.
 
-## Packaging for Mozilla
-
-Create a ZIP with `manifest.json` at its root, together with:
-
-- `background.js`, `content.js`, `core.js`, `i18n.js`, `sound.js`
-- `options.html`, `options.css`, `options.js`
-- `icons/intent-48.png`, `icons/intent-96.png`, `icons/intent-128.png`
-- `LICENSE`
-
-Do not wrap these files in a parent directory inside the ZIP.
-The `dist/` directory is excluded from Git; distribute packaged versions
-through Mozilla Add-ons or GitHub Releases.
 
 ## License
 
