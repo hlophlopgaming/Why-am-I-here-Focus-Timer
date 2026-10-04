@@ -181,6 +181,10 @@ async function handle(message, sender) {
 		await broadcast();
 		return {ok: true};
 	}
+	if (message.type === "END_SESSION") {
+		if (site) await expire(site);
+		return stateFor(url);
+	}
 	if (message.type === "START_SESSION") {
 		if (!site) throw new Error("This site is no longer on the list.");
 		await sweep();

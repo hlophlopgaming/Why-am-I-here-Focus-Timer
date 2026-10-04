@@ -69,6 +69,41 @@ function harness({config = {...core.DEFAULTS, sites: ["example.com"]}, sessions 
 	};
 }
 
+test("manual ending closes only the sender's site and clears its session and alarms", async () => {
+	const h = harness({
+		config: {...core.DEFAULTS, sites: ["example.com", "other.test"]},
+		tabs: [
+			{id: 1, url: "https://example.com/a", windowId: 1},
+			{id: 2, url: "https://m.example.com/b", windowId: 2, pinned: true},
+			{id: 3, url: "https://other.test"},
+			{id: 4, url: "https://example.com", pendingUrl: "https://elsewhere.test"}
+		]
+	});
+	await h.message({type: "START_SESSION", task: "A", minutes: 15}, h.sender(1));
+	await h.message({type: "START_SESSION", task: "B", minutes: 15}, h.sender(3));
+	const result = await h.message({type: "END_SESSION", site: "other.test"}, h.sender(1));
+	assert.equal(result.ok, true);
+	assert.equal(result.session, null);
+	assert.deepEqual(h.removed, [1, 2]);
+	assert.equal(h.data.sessions["example.com"], undefined);
+	assert.ok(h.data.sessions["other.test"]);
+	assert.ok([...h.alarms.keys()].every(name => !name.endsWith(":example.com")));
+	assert.deepEqual(h.soundKinds, ["end"]);
+	await h.api.alarms.onAlarm.emit({name: "intent:end:example.com"});
+	assert.deepEqual(h.removed, [1, 2]);
+});
+
+test("manual ending ignores stale documents, rejects subframes, and leaves idle tabs open", async () => {
+	const h = harness({tabs: [{id: 1, url: "https://example.com"}]});
+	await h.message({type: "END_SESSION"}, h.sender(1));
+	assert.deepEqual(h.removed, []);
+	await h.message({type: "START_SESSION", task: "A", minutes: 15}, h.sender(1));
+	assert.equal((await h.message({type: "END_SESSION"}, {...h.sender(1), frameId: 1})).ok, false);
+	assert.equal((await h.message({type: "END_SESSION"}, {...h.sender(1), url: "https://other.test"})).stale, true);
+	assert.deepEqual(h.removed, []);
+	assert.ok(h.data.sessions["example.com"]);
+});
+
 test("normalizes full URLs, IDNs and duplicate/overlapping domains", () => {
 	assert.deepEqual(core.parseSites("https://WWW.YouTube.com/watch?v=1\nyoutube.com\nmusic.youtube.com\nпример.рф"), ["xn--e1afmkfd.xn--p1ai", "youtube.com"]);
 	assert.throws(() => core.parseSites("*.com"));

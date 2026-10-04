@@ -41,13 +41,15 @@
 		.error { color: #a72c36; font-size: 13px; margin: 10px 0 0; }
 		.settings { display: block; margin: 14px auto 0; padding: 5px 8px; background: transparent; color: #63776e; font-size: 12px; }
 		.reminder { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(350px, calc(100vw - 24px)); padding: 16px 22px; border: 1px solid #c7d3cd; border-radius: 18px; color: #eef8f0; background: #203c34; box-shadow: 0 8px 32px #0002; text-align: center; pointer-events: auto; cursor: grab; touch-action: none; user-select: none; opacity: var(--intent-opacity, .4); transition: opacity .2s, background .2s; }
-		.reminder:hover, .reminder:focus-visible, .reminder:active { opacity: 1; }
+		.reminder:hover, .reminder:focus-within, .reminder:active { opacity: 1; }
 		.reminder:active { cursor: grabbing; }
 		.reminder:focus-visible { outline: 3px solid #8bc2b1; outline-offset: 3px; }
 		.reminder.warning { opacity: 1; background: #b32b3a; border-color: #cb4754; color: white; }
 		.timer { direction: ltr; unicode-bidi: isolate; font-size: 40px; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
 		.task { margin-top: 10px; font-size: 23px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; white-space: pre-wrap; max-height: 180px; overflow-y: auto; }
 		.caption { margin-top: 8px; font-size: 10px; opacity: .75; }
+		.end-session { width: 100%; margin-top: 12px; padding: 8px 10px; background: #eef8f0; color: #203c34; font-size: 12px; }
+		.reminder .error { color: #fff; }
 		:host([dir="rtl"]) .brand, :host([dir="rtl"]) h1 { letter-spacing: normal; }
 		@media (max-width: 520px) { .card { padding: 24px; } h1 { font-size: 24px; } }
 		@media (prefers-reduced-motion: reduce) { .reminder { transition: none; } }
@@ -161,11 +163,23 @@
 		if (mountedMode !== "timer") {
 			mountedMode = "timer";
 			const element = shell();
-			element.innerHTML = `<div class="reminder" tabindex="0" role="group" aria-label="Goal and time remaining. Drag to move, or use the arrow keys." data-i18n-label="Goal and time remaining. Drag to move, or use the arrow keys."><div class="timer" role="timer" aria-live="off"></div><div class="task" dir="auto"></div><div class="caption"></div></div>`;
+			element.innerHTML = `<div class="reminder" tabindex="0" role="group" aria-label="Goal and time remaining. Drag to move, or use the arrow keys." data-i18n-label="Goal and time remaining. Drag to move, or use the arrow keys."><div class="timer" role="timer" aria-live="off"></div><div class="task" dir="auto"></div><div class="caption"></div><button class="end-session" type="button" data-i18n="Force end session">Force end session</button><p class="error" role="alert" hidden></p></div>`;
 			const block = root.querySelector(".reminder");
+			const endButton = block.querySelector(".end-session");
+			endButton.addEventListener("click", async () => {
+				endButton.disabled = true;
+				const error = block.querySelector(".error");
+				error.hidden = true;
+				try { applyState(await send({type: "END_SESSION"})); }
+				catch (failure) {
+					error.textContent = t(failure.message);
+					error.hidden = false;
+					endButton.disabled = false;
+				}
+			});
 			let drag = null;
 			block.addEventListener("pointerdown", event => {
-				if (event.button !== 0) return;
+				if (event.button !== 0 || event.target.closest("button")) return;
 				const bounds = block.getBoundingClientRect();
 				drag = {x: event.clientX, y: event.clientY, centerX: bounds.x + bounds.width / 2, centerY: bounds.y + bounds.height / 2};
 				block.setPointerCapture(event.pointerId);
@@ -178,6 +192,7 @@
 			block.addEventListener("pointerup", () => { if (drag) { drag = null; savePosition(block); } });
 			block.addEventListener("pointercancel", () => { if (drag) { drag = null; savePosition(block); } });
 			block.addEventListener("keydown", event => {
+				if (event.target !== block) return;
 				const deltas = {ArrowLeft: [-12, 0], ArrowRight: [12, 0], ArrowUp: [0, -12], ArrowDown: [0, 12]};
 				if (!deltas[event.key]) return;
 				event.preventDefault();

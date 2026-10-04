@@ -3,6 +3,7 @@
  "use strict";
  const translations = {
   "ru": {
+    "Force end session": "Принудительно завершить сессию",
     "Why am I here? — Settings": "Зачем я здесь? — настройки",
     "WHY AM I HERE?": "ЗАЧЕМ Я ЗДЕСЬ?",
     "Why am I here?": "Зачем я здесь?",
@@ -73,6 +74,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "Вы уверены, что хотите включить расширение на всех сайтах? На каждом сайте нужно будет указать цель и время. По истечении времени его вкладки закроются. Настройки и служебные страницы браузера исключены."
   },
   "de": {
+    "Force end session": "Sitzung sofort beenden",
     "Why am I here? — Settings": "Warum bin ich hier? — Einstellungen",
     "WHY AM I HERE?": "WARUM BIN ICH HIER?",
     "Why am I here?": "Warum bin ich hier?",
@@ -143,6 +145,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "Auf jeder Website aktivieren? Auf jeder Website wirst du nach einem Ziel und einem Zeitlimit gefragt. Nach Ablauf der Zeit werden ihre Tabs geschlossen. Browsereinstellungen und interne Seiten sind ausgeschlossen."
   },
   "es": {
+    "Force end session": "Finalizar sesión ahora",
     "Why am I here? — Settings": "¿Por qué estoy aquí? — Ajustes",
     "WHY AM I HERE?": "¿POR QUÉ ESTOY AQUÍ?",
     "Why am I here?": "¿Por qué estoy aquí?",
@@ -213,6 +216,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "¿Activar en todos los sitios web? En cada sitio se te pedirá un objetivo y un límite de tiempo. Al agotarse el tiempo, sus pestañas se cerrarán. Los ajustes y las páginas internas del navegador quedan excluidos."
   },
   "fr": {
+    "Force end session": "Terminer la session immédiatement",
     "Why am I here? — Settings": "Pourquoi suis-je ici ? — Paramètres",
     "WHY AM I HERE?": "POURQUOI SUIS-JE ICI ?",
     "Why am I here?": "Pourquoi suis-je ici ?",
@@ -283,6 +287,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "Activer sur tous les sites ? Un objectif et une durée vous seront demandés sur chaque site. Une fois le temps écoulé, ses onglets se fermeront. Les paramètres et pages internes du navigateur sont exclus."
   },
   "it": {
+    "Force end session": "Termina subito la sessione",
     "Why am I here? — Settings": "Perché sono qui? — Impostazioni",
     "WHY AM I HERE?": "PERCHÉ SONO QUI?",
     "Why am I here?": "Perché sono qui?",
@@ -353,6 +358,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "Attivare su tutti i siti web? Su ogni sito ti verranno chiesti un obiettivo e un limite di tempo. Allo scadere del tempo, le sue schede si chiuderanno. Le impostazioni e le pagine interne del browser sono escluse."
   },
   "pl": {
+    "Force end session": "Zakończ sesję natychmiast",
     "Why am I here? — Settings": "Po co tu jestem? — Ustawienia",
     "WHY AM I HERE?": "PO CO TU JESTEM?",
     "Why am I here?": "Po co tu jestem?",
@@ -423,6 +429,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "Włączyć we wszystkich witrynach? W każdej witrynie trzeba będzie podać cel i limit czasu. Po upływie czasu jej karty zostaną zamknięte. Ustawienia i wewnętrzne strony przeglądarki są wykluczone."
   },
   "zh": {
+    "Force end session": "强制结束会话",
     "Why am I here? — Settings": "我为什么在这里？— 设置",
     "WHY AM I HERE?": "我为什么在这里？",
     "Why am I here?": "我为什么在这里？",
@@ -493,6 +500,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "确定要在所有网站上启用吗？每个网站都会要求填写目标和时间限制。时间结束后，该网站的标签页会关闭。浏览器设置和内部页面除外。"
   },
   "hi": {
+    "Force end session": "सत्र तुरंत समाप्त करें",
     "Why am I here? — Settings": "मैं यहाँ क्यों हूँ? — सेटिंग्स",
     "WHY AM I HERE?": "मैं यहाँ क्यों हूँ?",
     "Why am I here?": "मैं यहाँ क्यों हूँ?",
@@ -563,6 +571,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "क्या आप सभी वेबसाइटों पर इसे चालू करना चाहते हैं? हर वेबसाइट पर लक्ष्य और समय सीमा पूछी जाएगी। समय खत्म होने पर उसके टैब बंद हो जाएँगे। ब्राउज़र की सेटिंग्स और आंतरिक पेज बाहर रखे जाते हैं।"
   },
   "ar": {
+    "Force end session": "إنهاء الجلسة فورًا",
     "Why am I here? — Settings": "لماذا أنا هنا؟ — الإعدادات",
     "WHY AM I HERE?": "لماذا أنا هنا؟",
     "Why am I here?": "لماذا أنا هنا؟",
@@ -633,6 +642,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "هل تريد بالتأكيد التفعيل على جميع المواقع؟ سيُطلب منك تحديد هدف ومدة لكل موقع. عند انتهاء الوقت ستُغلق علامات تبويبه. تُستثنى إعدادات المتصفح وصفحاته الداخلية."
   },
   "pt": {
+    "Force end session": "Encerrar sessão agora",
     "Why am I here? — Settings": "Por que estou aqui? — Configurações",
     "WHY AM I HERE?": "POR QUE ESTOU AQUI?",
     "Why am I here?": "Por que estou aqui?",
@@ -703,6 +713,7 @@
     "Enable on every website? You will be asked for a goal and a time limit on every website. When time runs out, its tabs will close. Browser settings and internal pages are excluded.": "Ativar em todos os sites? Cada site pedirá um objetivo e um limite de tempo. Quando o tempo acabar, suas abas serão fechadas. As configurações e páginas internas do navegador ficam excluídas."
   },
   "tr": {
+    "Force end session": "Oturumu hemen sonlandır",
     "Why am I here? — Settings": "Neden buradayım? — Ayarlar",
     "WHY AM I HERE?": "NEDEN BURADAYIM?",
     "Why am I here?": "Neden buradayım?",
