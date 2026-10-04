@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "Why am I here?",
+  "version": "1.0.0",
+  "description": "Set a browsing goal, share a site timer across tabs, and close them when time is up.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "alarms"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "scripts": [
+      "core.js",
+      "sound.js",
+      "background.js"
+    ]
+  },
+  "action": {
+    "default_title": "Why am I here? — Settings",
+    "default_icon": {
+      "48": "icons/intent-48.png",
+      "96": "icons/intent-96.png",
+      "128": "icons/intent-128.png"
+    }
+  },
+  "icons": {
+    "48": "icons/intent-48.png",
+    "96": "icons/intent-96.png",
+    "128": "icons/intent-128.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "i18n.js",
+        "core.js",
+        "sound.js",
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "site-intent@local.extension",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
+    }
+  }
+}

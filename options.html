@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title data-i18n="Why am I here? — Settings">Why am I here? — Settings</title>
+		<link rel="stylesheet" href="options.css">
+		<script src="i18n.js" defer></script>
+		<script src="core.js" defer></script>
+		<script src="sound.js" defer></script>
+		<script src="options.js" defer></script>
+	</head>
+	<body>
+		<main>
+			<header>
+				<div class="brand"><img src="icons/intent-48.png" alt="" width="28" height="28"> <span data-i18n="WHY AM I HERE?">WHY AM I HERE?</span></div>
+				<p class="eyebrow"><span data-i18n="Browse with intention">Browse with intention</span></p>
+				<h1><span data-i18n="Your site.">Your site.</span><br><span data-i18n="Your goal. Your time.">Your goal. Your time.</span></h1>
+				<p class="intro"><span data-i18n="Answer two questions before browsing. The extension reminds you of your goal and closes the site's tabs when time runs out.">Answer two questions before browsing. The extension reminds you of your goal and closes the site's tabs when time runs out.</span></p>
+			</header>
+			<form id="settings">
+<section class="panel"><label for="language" data-i18n="Language">Language</label><select id="language"><option value="auto" data-i18n="Automatic (browser language)">Automatic (browser language)</option></select></section>
+				<section class="panel">
+					<div class="panel-heading"><h2><span data-i18n="Where do you need a pause?">Where do you need a pause?</span></h2></div>
+					<label class="toggle"><input id="all-sites" type="checkbox"> <span data-i18n="Use on all websites">Use on all websites</span></label>
+<p class="hint" data-i18n="With this off, only listed websites are active. An empty list disables reminders. Browser settings and internal pages are always excluded.">With this off, only listed websites are active. An empty list disables reminders. Browser settings and internal pages are always excluded.</p>
+<br>
+					<label for="sites"><span data-i18n="Websites — one per line">Websites — one per line</span></label>
+					<textarea id="sites" dir="ltr" rows="6" spellcheck="false" placeholder="youtube.com&#10;vk.com&#10;reddit.com" aria-describedby="sites-help"></textarea>
+					<p class="hint" id="sites-help"><span data-i18n="Paste a full URL to save its domain, including all subdomains. The list is empty by default.">Paste a full URL to save its domain, including all subdomains. The list is empty by default.</span></p>
+				</section>
+				<section class="panel">
+					<h2><span data-i18n="Reminder preferences">Reminder preferences</span></h2>
+					<div class="grid">
+						<div><label for="default-minutes"><span data-i18n="Default time, minutes">Default time, minutes</span></label><input id="default-minutes" type="number" min="0.1" max="1440" step="any" required><p class="hint"><span data-i18n="You can change it at the start of each session.">You can change it at the start of each session.</span></p></div>
+						<div><label for="warning-seconds"><span data-i18n="Show a red warning this many seconds before the end">Show a red warning this many seconds before the end</span></label><input id="warning-seconds" type="number" min="1" max="600" step="1" required><p class="hint"><span data-i18n="120 seconds = 2 minutes. Short sessions turn red immediately.">120 seconds = 2 minutes. Short sessions turn red immediately.</span></p></div>
+					</div>
+					<div class="range-label"><label for="opacity"><span data-i18n="Reminder opacity">Reminder opacity</span></label><output id="opacity-value" for="opacity">40%</output></div>
+					<input id="opacity" type="range" min="15" max="100" step="5">
+					<p class="hint"><span data-i18n="100% on hover and during warnings. Drag the reminder to move it; its position is shared across tabs.">100% on hover and during warnings. Drag the reminder to move it; its position is shared across tabs.</span></p>
+					<div class="sound-row"><label class="toggle"><input id="sound" type="checkbox"> <span data-i18n="Play warning and final 10-second countdown sounds">Play warning and final 10-second countdown sounds</span></label><button class="secondary" id="test-sound" type="button"><span data-i18n="Preview sound">Preview sound</span></button></div>
+				</section>
+				<div class="save-row"><button class="primary" type="submit" id="save"><span data-i18n="Save settings">Save settings</span></button><p id="status" role="status" aria-live="polite"></p></div>
+			</form>
+			<section class="panel sessions-panel" aria-labelledby="sessions-heading"><h2 id="sessions-heading"><span data-i18n="Active sessions">Active sessions</span></h2><div id="sessions"><p class="hint"><span data-i18n="No active sessions yet.">No active sessions yet.</span></p></div></section>
+			<footer>
+				<p><strong><span data-i18n="One site — one timer.">One site — one timer.</span></strong> <span data-i18n="New tabs and page reloads continue the session. Close or leave all tabs of a site to start a new session on your next visit.">New tabs and page reloads continue the session. Close or leave all tabs of a site to start a new session on your next visit.</span></p>
+				<p><span data-i18n="The timer also runs in the background. When it ends, pinned tabs of the site close too. Private windows require permission in Firefox.">The timer also runs in the background. When it ends, pinned tabs of the site close too. Private windows require permission in Firefox.</span></p>
+				<p><span data-i18n="Goals and settings stay in your browser. No browsing history, analytics, or data uploads.">Goals and settings stay in your browser. No browsing history, analytics, or data uploads.</span></p>
+			</footer>
+		</main>
+	</body>
+</html>

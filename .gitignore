@@ -1,0 +1,16 @@
+# Generated packages and local dependencies
+/dist/
+/web-ext-artifacts/
+/node_modules/
+
+# Local credentials and editor/OS files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+__pycache__/
