@@ -1,7 +1,15 @@
+<p align="center">
+  <img src="icons/logo.png" alt="Why am I here? logo" width="160">
+</p>
+
 # Why am I here? — Focus Timer
 
 A Firefox extension for browsing with purpose. Set a goal and a time limit,
 keep your goal visible, and close a site's tabs when time runs out.
+
+![Extension settings](screenshots/Screenshot%202026-10-04%20at%2018-18-14%20Why%20am%20I%20here%20%E2%80%94%20Settings.png)
+
+![Extension on YouTube](screenshots/Screenshot%202026-10-04%20at%2019-21-47%20opsec%20demon%20-%20YouTube.png)
 
 ## Features
 
