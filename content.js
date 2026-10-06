@@ -20,7 +20,9 @@
 		:host { all: initial !important; position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; pointer-events: none !important; color-scheme: light !important; }
 		* { box-sizing: border-box; }
 		.shell { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #192725; font-size: 16px; line-height: 1.5; }
-		.backdrop { position: fixed; inset: 0; display: grid; place-items: center; padding: 20px; overflow-y: auto; background: rgba(15, 29, 27, .65); backdrop-filter: blur(8px); pointer-events: auto; }
+		.backdrop { position: fixed; inset: 0; width: auto; max-width: none; height: auto; max-height: none; margin: 0; border: 0; place-items: center; padding: 20px; overflow-y: auto; background: rgba(15, 29, 27, .65); backdrop-filter: blur(8px); pointer-events: auto; }
+		.backdrop[open] { display: grid; }
+		.backdrop::backdrop { background: transparent; }
 		.card { width: min(490px, 100%); margin: auto; padding: 32px; border: 1px solid #dce4de; border-radius: 24px; background: #fbfaf6; box-shadow: 0 28px 90px #0004; }
 		.brand { display: flex; align-items: center; gap: 8px; margin-bottom: 22px; color: #53716b; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 		.dot { width: 9px; height: 9px; border-radius: 50%; background: #2b7865; }
@@ -98,8 +100,8 @@
 		const element = shell();
 		// All dynamic user data is inserted with textContent/value, never HTML.
 		element.innerHTML = `
-			<div class="backdrop">
-				<section class="card" role="dialog" aria-modal="true" aria-labelledby="intent-heading">
+			<dialog class="backdrop" aria-labelledby="intent-heading">
+				<section class="card">
 					<div class="brand"><span class="dot"></span> <span data-i18n="Why am I here?">Why am I here?</span></div>
 					<h1 id="intent-heading"><span data-i18n="Browse with a purpose.">Browse with a purpose.</span></h1>
 					<p class="site" dir="ltr"></p>
@@ -115,7 +117,8 @@
 					</form>
 					<button class="settings" type="button"><span data-i18n="Extension settings">Extension settings</span></button>
 				</section>
-			</div>`;
+			</dialog>`;
+		root.querySelector(".backdrop").showModal();
 		IntentI18n.localize(element, current.config.language);
 		host.lang = current.config.language; host.dir = current.config.language === "ar" ? "rtl" : "ltr";
 		root.querySelector(".site").textContent = current.site;
