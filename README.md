@@ -50,6 +50,16 @@ node --test tests/*.cjs
 
 Tests simulate browser APIs and do not replace testing in Firefox.
 
+## Releases
+
+Pushing a tag in the form `vX.Y.Z` verifies the matching version in
+`manifest.json`, runs the tests, builds an `.xpi`, and attaches it to a GitHub
+Release.
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## License
 
