@@ -110,7 +110,7 @@
 						<textarea id="intent-task" dir="auto" required maxlength="300" placeholder="For example, learn a new language or study a subject" data-i18n-placeholder="For example, learn a new language or study a subject"></textarea>
 						<label for="intent-minutes"><span data-i18n="How much time do you want to spend on your goal?">How much time do you want to spend on your goal?</span></label>
 						<input id="intent-minutes" type="number" min="0.1" max="1440" step="any" required aria-describedby="intent-minutes-note">
-						<div class="quick"><button type="button" data-minutes="5"><span data-i18n="5 min">5 min</span></button><button type="button" data-minutes="15"><span data-i18n="15 min">15 min</span></button><button type="button" data-minutes="30"><span data-i18n="30 min">30 min</span></button></div>
+						<div class="quick"><button type="button" data-minutes="1"><span data-i18n="1 min">1 min</span></button><button type="button" data-minutes="5"><span data-i18n="5 min">5 min</span></button><button type="button" data-minutes="15"><span data-i18n="15 min">15 min</span></button><button type="button" data-minutes="30"><span data-i18n="30 min">30 min</span></button></div>
 						<p class="note" id="intent-minutes-note"><span data-i18n="Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.">Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.</span></p>
 						<p class="error" role="alert" hidden></p>
 						<button class="start" type="submit"><span data-i18n="Start session">Start session</span></button>
