@@ -25,7 +25,7 @@ jobs:
       - name: Build extension
         run: |
           mkdir -p dist
-          python3 -m zipfile -c "dist/why-am-i-here-$GITHUB_REF_NAME.xpi" manifest.json background.js content.js core.js i18n.js options.html options.css options.js sound.js icons/* sounds/*
+          zip -r "dist/why-am-i-here-$GITHUB_REF_NAME.xpi" manifest.json background.js content.js core.js i18n.js options.html options.css options.js sound.js icons sounds
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}

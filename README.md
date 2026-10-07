@@ -4,6 +4,8 @@
 
 # Why am I here? — Focus Timer
 
+[![Get the Firefox extension](https://img.shields.io/badge/Firefox-Get_the_extension-FF7139?logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/ru/firefox/addon/why-am-i-here-focus-timer/)
+
 A Firefox extension for browsing with purpose. Set a goal and a time limit,
 keep your goal visible, and close a site's tabs when time runs out.
 
