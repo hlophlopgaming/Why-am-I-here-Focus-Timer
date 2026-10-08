@@ -43,12 +43,7 @@ async function broadcast() {
 	const tabs = await api.tabs.query({});
 	await Promise.allSettled(tabs.map(tab => api.tabs.sendMessage(tab.id, {type: "STATE", state: stateFor(tab.pendingUrl || tab.url)})));
 }
-async function expire(site) {
-	if (!sessions[site]) return;
-	delete sessions[site];
-	await persist();
-	await clearAlarms(site);
-	await playSound(site, "end", "PLAY_END");
+async function closeTabs(site) {
 	const candidates = (await api.tabs.query({})).filter(tab => tabMatches(tab, site));
 	for (const tab of candidates) {
 		try {
@@ -60,6 +55,14 @@ async function expire(site) {
 			console.debug("Site Intent: tab no longer available", error);
 		}
 	}
+}
+async function expire(site) {
+	if (!sessions[site]) return;
+	delete sessions[site];
+	await persist();
+	await clearAlarms(site);
+	await playSound(site, "end", "PLAY_END");
+	await closeTabs(site);
 	await broadcast();
 }
 async function warn(site) {
@@ -184,6 +187,13 @@ async function handle(message, sender) {
 	if (message.type === "END_SESSION") {
 		if (site) await expire(site);
 		return stateFor(url);
+	}
+	if (message.type === "CLOSE_SITE") {
+		if (site) {
+			if (sessions[site]) await expire(site);
+			else await closeTabs(site);
+		}
+		return {ok: true};
 	}
 	if (message.type === "START_SESSION") {
 		if (!site) throw new Error("This site is no longer on the list.");

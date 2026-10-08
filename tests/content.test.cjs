@@ -12,7 +12,7 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 		addEventListener(name, handler) { (this.handlers[name] ||= []).push(handler); },
 		append() {}, remove() {}, focus() {}, showModal() {}, querySelector() { return null; }
 	});
-	for (const selector of [".backdrop", ".site", "#intent-minutes", ".settings", "form", ".error", ".start", "#intent-task"]) elements.set(selector, makeElement());
+	for (const selector of [".backdrop", ".site", "#intent-minutes", ".settings", "form", ".error", ".start", ".close-site", "#intent-task"]) elements.set(selector, makeElement());
 	elements.get("#intent-minutes").value = "15";
 	const root = {
 		activeElement: null,
@@ -30,9 +30,13 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 		},
 		addEventListener() {}, hidden: false
 	};
+	const messages = [];
 	const browser = {runtime: {
 		onMessage: {addListener() {}},
-		sendMessage: async () => ({ok: true, site: "youtube.com", session: null, reminderPosition: null, config: {language: "en", defaultMinutes: 15}})
+		sendMessage: async message => {
+			messages.push(message);
+			return {ok: true, site: "youtube.com", session: null, reminderPosition: null, config: {language: "en", defaultMinutes: 15}};
+		}
 	}};
 	const context = vm.createContext({
 		browser, document, window: {addEventListener() {}}, console,
@@ -42,9 +46,15 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 	vm.runInContext(fs.readFileSync(path.join(__dirname, "../content.js"), "utf8"), context);
 	await new Promise(resolve => setTimeout(resolve, 10));
 
+	let cancelPrevented = false;
+	elements.get(".backdrop").handlers.cancel[0]({preventDefault() { cancelPrevented = true; }});
+	assert.equal(cancelPrevented, true, "Escape must not dismiss the intent form");
+
 	for (const type of ["keydown", "keyup", "keypress"]) {
 		let stopped = false;
 		for (const handler of root.shell.handlers[type]) handler({key: "k", stopPropagation() { stopped = true; }});
 		assert.equal(stopped, true, `${type} must not reach YouTube`);
 	}
+	await elements.get(".close-site").handlers.click[0]();
+	assert.equal(messages.at(-1).type, "CLOSE_SITE");
 });

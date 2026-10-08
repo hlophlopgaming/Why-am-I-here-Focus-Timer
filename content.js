@@ -39,6 +39,8 @@
 		.quick button { padding: 6px 12px; background: #eaf0e9; color: #496259; }
 		.start { width: 100%; margin-top: 20px; color: white; background: #246650; }
 		.start:hover { background: #184d3b; }
+		.close-site { width: 100%; margin-top: 8px; color: #8f2330; background: #f5e6e7; }
+		.close-site:hover { background: #ecd3d6; }
 		.note { margin: 14px 0 0; color: #64746d; font-size: 12px; }
 		.error { color: #a72c36; font-size: 13px; margin: 10px 0 0; }
 		.settings { display: block; margin: 14px auto 0; padding: 5px 8px; background: transparent; color: #63776e; font-size: 12px; }
@@ -114,11 +116,14 @@
 						<p class="note" id="intent-minutes-note"><span data-i18n="Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.">Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.</span></p>
 						<p class="error" role="alert" hidden></p>
 						<button class="start" type="submit"><span data-i18n="Start session">Start session</span></button>
+						<button class="close-site" type="button"><span data-i18n="Close all site tabs">Close all site tabs</span></button>
 					</form>
 					<button class="settings" type="button"><span data-i18n="Extension settings">Extension settings</span></button>
 				</section>
 			</dialog>`;
-		root.querySelector(".backdrop").showModal();
+		const backdrop = root.querySelector(".backdrop");
+		backdrop.addEventListener("cancel", event => event.preventDefault());
+		backdrop.showModal();
 		IntentI18n.localize(element, current.config.language);
 		host.lang = current.config.language; host.dir = current.config.language === "ar" ? "rtl" : "ltr";
 		root.querySelector(".site").textContent = current.site;
@@ -138,6 +143,15 @@
 			button.disabled = true;
 			try { applyState(await send({type: "START_SESSION", task, minutes: duration})); }
 			catch (error) { errorBox.textContent = t(error.message); errorBox.hidden = false; button.disabled = false; }
+		});
+		const closeButton = root.querySelector(".close-site");
+		closeButton.addEventListener("click", async () => {
+			closeButton.disabled = true;
+			try { await send({type: "CLOSE_SITE"}); }
+			catch (error) {
+				const errorBox = root.querySelector(".error");
+				errorBox.textContent = t(error.message); errorBox.hidden = false; closeButton.disabled = false;
+			}
 		});
 		// Shadow DOM retargets input events to the host, so pages may mistake them for shortcuts.
 		for (const eventName of ["keyup", "keypress"]) element.addEventListener(eventName, event => event.stopPropagation());

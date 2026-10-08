@@ -104,6 +104,21 @@ test("manual ending ignores stale documents, rejects subframes, and leaves idle 
 	assert.ok(h.data.sessions["example.com"]);
 });
 
+test("closing an idle site closes all of its tabs and no others", async () => {
+	const h = harness({tabs: [
+		{id: 1, url: "https://example.com/a"},
+		{id: 2, url: "https://m.example.com/b", pinned: true},
+		{id: 3, url: "https://other.test"},
+		{id: 4, url: "https://example.com", pendingUrl: "https://other.test/leaving"}
+	]});
+	assert.equal((await h.message({type: "CLOSE_SITE"}, {...h.sender(1), frameId: 1})).ok, false);
+	assert.deepEqual(h.removed, []);
+	assert.equal((await h.message({type: "CLOSE_SITE", site: "other.test"}, h.sender(1))).ok, true);
+	assert.deepEqual(h.removed, [1, 2]);
+	assert.deepEqual([...h.tabs.keys()], [3, 4]);
+	assert.equal(h.sounds, 0);
+});
+
 test("normalizes full URLs, IDNs and duplicate/overlapping domains", () => {
 	assert.deepEqual(core.parseSites("https://WWW.YouTube.com/watch?v=1\nyoutube.com\nmusic.youtube.com\nпример.рф"), ["xn--e1afmkfd.xn--p1ai", "youtube.com"]);
 	assert.throws(() => core.parseSites("*.com"));
