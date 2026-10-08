@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Why am I here?",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Set a browsing goal, share a site timer across tabs, and close them when time is up.",
   "permissions": [
     "storage",

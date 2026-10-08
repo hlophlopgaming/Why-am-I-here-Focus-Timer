@@ -139,8 +139,11 @@
 			try { applyState(await send({type: "START_SESSION", task, minutes: duration})); }
 			catch (error) { errorBox.textContent = t(error.message); errorBox.hidden = false; button.disabled = false; }
 		});
+		// Shadow DOM retargets input events to the host, so pages may mistake them for shortcuts.
+		for (const eventName of ["keyup", "keypress"]) element.addEventListener(eventName, event => event.stopPropagation());
 		// Keep keyboard navigation inside the form while it is open.
 		element.addEventListener("keydown", event => {
+			event.stopPropagation();
 			if (event.key !== "Tab") return;
 			const controls = [...root.querySelectorAll("textarea, input, button")].filter(control => !control.disabled);
 			const first = controls[0];
