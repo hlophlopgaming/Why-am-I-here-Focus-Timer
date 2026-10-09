@@ -17,6 +17,7 @@ function harness({config = {...core.DEFAULTS, sites: ["example.com"]}, sessions 
 	const data = {config: clone(config), sessions: clone(sessions), reminderPosition: clone(reminderPosition)};
 	const tabMap = new Map(tabs.map(tab => [tab.id, clone(tab)]));
 	const removed = [];
+	const created = [];
 	const messages = [];
 	const alarms = new Map();
 	let sounds = 0;
@@ -36,6 +37,12 @@ function harness({config = {...core.DEFAULTS, sites: ["example.com"]}, sessions 
 				return clone(tabMap.get(id));
 			},
 			remove: async id => { removed.push(id); tabMap.delete(id); },
+			create: async properties => {
+				const id = 1000 + created.length;
+				created.push(clone(properties));
+				tabMap.set(id, {id, url: "about:newtab", windowId: properties.windowId});
+				return {id};
+			},
 			sendMessage: async (id, message) => { messages.push({id, ...clone(message)}); },
 			onRemoved: event(), onUpdated: event()
 		},
@@ -61,7 +68,7 @@ function harness({config = {...core.DEFAULTS, sites: ["example.com"]}, sessions 
 	const sender = id => ({tab: {id}, frameId: 0, url: tabMap.get(id)?.pendingUrl || tabMap.get(id)?.url});
 	const message = async (payload, from = optionsSender) => clone((await api.runtime.onMessage.emit(payload, from))[0]);
 	return {
-		api, data, tabs: tabMap, removed, messages, alarms, message, sender, soundKinds,
+		api, data, tabs: tabMap, removed, created, messages, alarms, message, sender, soundKinds,
 		ready: () => message({type: "GET_SETTINGS"}),
 		advance: milliseconds => { clock += milliseconds; },
 		get sounds() { return sounds; },
@@ -479,4 +486,37 @@ test("all-sites sessions restore, stay independent, and cancel when returning to
  assert.deepEqual(restored.data.sessions, {});
  assert.deepEqual(restored.removed, [1]);
  assert.equal(restored.alarms.size, 0);
+});
+
+test("expiry keeps a window open when all of its tabs belong to the site", async () => {
+	const h = harness({tabs: [
+		{id: 1, url: "https://example.com/a", windowId: 1},
+		{id: 2, url: "https://m.example.com/b", windowId: 1},
+		{id: 3, url: "https://example.com/c", windowId: 2},
+		{id: 4, url: "https://other.test", windowId: 2}
+	]});
+	await h.message({type: "START_SESSION", task: "Check", minutes: 0.1}, h.sender(1));
+	h.advance(6100);
+	await h.api.alarms.onAlarm.emit({name: "intent:end:example.com"});
+	assert.deepEqual(h.removed, [1, 2, 3]);
+	// Only window 1 would have become empty, so only it receives a replacement tab.
+	assert.deepEqual(h.created, [{windowId: 1}]);
+	assert.deepEqual([...h.tabs.values()].map(tab => tab.windowId).sort(), [1, 2]);
+});
+
+test("an early tick alarm is rescheduled instead of silencing the countdown", async () => {
+	const h = harness({tabs: [{id: 1, url: "https://example.com/a"}]});
+	await h.message({type: "START_SESSION", task: "Study", minutes: 1}, h.sender(1));
+	const endsAt = h.data.sessions["example.com"].endsAt;
+	h.advance(50000 - 5);
+	// Browsers remove one-shot alarms once they fire.
+	h.alarms.delete("intent:tick:example.com");
+	await h.api.alarms.onAlarm.emit({name: "intent:tick:example.com"});
+	assert.equal(h.data.sessions["example.com"].countdownSecond, undefined);
+	const next = h.alarms.get("intent:tick:example.com")?.when;
+	assert.ok(next >= endsAt - 10000 && next <= endsAt - 9800, `tick rescheduled near the ten-second mark, got ${next}`);
+	h.advance(5);
+	h.alarms.delete("intent:tick:example.com");
+	await h.api.alarms.onAlarm.emit({name: "intent:tick:example.com"});
+	assert.equal(h.data.sessions["example.com"].countdownSecond, 10);
 });
