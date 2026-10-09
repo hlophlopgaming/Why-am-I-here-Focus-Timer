@@ -113,7 +113,7 @@
 						<div class="quick"><button type="button" data-minutes="1"><span data-i18n="1 min">1 min</span></button><button type="button" data-minutes="5"><span data-i18n="5 min">5 min</span></button><button type="button" data-minutes="15"><span data-i18n="15 min">15 min</span></button><button type="button" data-minutes="30"><span data-i18n="30 min">30 min</span></button></div>
 						<p class="note" id="intent-minutes-note"><span class="minutes-note" data-i18n="Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.">Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.</span></p>
 						<p class="error" role="alert" hidden></p>
-						<button class="start" type="submit"><span data-i18n="Start session">Start session</span></button>
+						<button class="start" type="submit" disabled><span data-i18n="Start session">Start session</span></button>
 						<button class="close-site" type="button"><span data-i18n="Close all site tabs">Close all site tabs</span></button>
 					</form>
 					<button class="settings" type="button"><span data-i18n="Extension settings">Extension settings</span></button>
@@ -129,7 +129,12 @@
 		IntentI18n.localize(element, current.config.language);
 		host.lang = current.config.language; host.dir = current.config.language === "ar" ? "rtl" : "ltr";
 		root.querySelector(".site").textContent = current.site;
+		const task = root.querySelector("#intent-task");
 		const minutes = root.querySelector("#intent-minutes");
+		const startButton = root.querySelector(".start");
+		const updateStartButton = () => { startButton.disabled = !task.value.trim(); };
+		task.addEventListener("input", updateStartButton);
+		updateStartButton();
 		minutes.value = current.config.defaultMinutes;
 		for (const button of root.querySelectorAll("[data-minutes]")) {
 			button.addEventListener("click", () => { minutes.value = button.dataset.minutes; });
@@ -138,13 +143,12 @@
 		root.querySelector("form").addEventListener("submit", async event => {
 			event.preventDefault();
 			IntentSound.unlock().catch(() => {});
-			const button = root.querySelector(".start");
 			const errorBox = root.querySelector(".error");
-			const task = root.querySelector("#intent-task").value;
+			const taskValue = task.value;
 			const duration = minutes.value;
-			button.disabled = true;
-			try { applyState(await send({type: "START_SESSION", task, minutes: duration})); }
-			catch (error) { errorBox.textContent = t(error.message); errorBox.hidden = false; button.disabled = false; }
+			startButton.disabled = true;
+			try { applyState(await send({type: "START_SESSION", task: taskValue, minutes: duration})); }
+			catch (error) { errorBox.textContent = t(error.message); errorBox.hidden = false; updateStartButton(); }
 		});
 		const closeButton = root.querySelector(".close-site");
 		closeButton.addEventListener("click", async () => {

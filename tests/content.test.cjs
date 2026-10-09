@@ -15,6 +15,7 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 	for (const selector of [".backdrop", ".site", "#intent-minutes", ".settings", "form", ".error", ".start", ".close-site", "#intent-task", ".minutes-note"]) elements.set(selector, makeElement());
 	elements.get(".minutes-note").dataset = {i18n: "subdomains"};
 	elements.get("#intent-minutes").value = "15";
+	elements.get("#intent-task").value = "";
 	const root = {
 		activeElement: null,
 		append(element) { if (element.className === "shell") this.shell = element; },
@@ -53,6 +54,10 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 	let cancelPrevented = false;
 	elements.get(".backdrop").handlers.cancel[0]({preventDefault() { cancelPrevented = true; }});
 	assert.equal(cancelPrevented, true, "Escape must not dismiss the intent form");
+	assert.equal(elements.get(".start").disabled, true);
+	elements.get("#intent-task").value = "Read documentation";
+	elements.get("#intent-task").handlers.input[0]();
+	assert.equal(elements.get(".start").disabled, false);
 
 	for (const type of ["keydown", "keyup", "keypress"]) {
 		let stopped = false;
