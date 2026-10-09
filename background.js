@@ -44,7 +44,17 @@ async function broadcast() {
 	await Promise.allSettled(tabs.map(tab => api.tabs.sendMessage(tab.id, {type: "STATE", state: stateFor(tab.pendingUrl || tab.url)})));
 }
 async function closeTabs(site) {
-	const candidates = (await api.tabs.query({})).filter(tab => tabMatches(tab, site));
+	const tabs = await api.tabs.query({});
+	const candidates = tabs.filter(tab => tabMatches(tab, site));
+	// Removing the last tab closes its window, and closing the last window quits Firefox.
+	// Open a new tab first in every window that would otherwise become empty.
+	const windows = new Set(candidates.map(tab => tab.windowId));
+	for (const windowId of windows) {
+		if (tabs.every(tab => tab.windowId !== windowId || tabMatches(tab, site))) {
+			try { await api.tabs.create(windowId === undefined ? {} : {windowId}); }
+			catch (error) { console.debug("Site Intent: could not keep window open", error); }
+		}
+	}
 	for (const tab of candidates) {
 		try {
 			// Recheck immediately before closing so a tab that left the site survives.
@@ -227,6 +237,9 @@ api.alarms.onAlarm.addListener(alarm => enqueue(async () => {
 		else await schedule(session);
 	} else if (kind === "tick") {
 		await sweep();
+		// An alarm delivered slightly early lands outside the final ten seconds; reschedule it.
+		const current = sessions[site];
+		if (current && current.endsAt - Date.now() > 10000) await schedule(current);
 	} else if (kind === "warn") {
 		if (session.endsAt - Date.now() <= config.warningSeconds * 1000) await warn(site);
 		else await schedule(session);

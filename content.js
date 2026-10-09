@@ -96,8 +96,6 @@
 	function showForm() {
 		if (mountedMode === "form") { IntentI18n.localize(root, current.config.language); host.lang = current.config.language; host.dir = current.config.language === "ar" ? "rtl" : "ltr"; return; }
 		mountedMode = "form";
-		if (timerId) clearInterval(timerId);
-		timerId = null;
 		previousFocus = document.activeElement;
 		const element = shell();
 		// All dynamic user data is inserted with textContent/value, never HTML.
@@ -113,7 +111,7 @@
 						<label for="intent-minutes"><span data-i18n="How much time do you want to spend on your goal?">How much time do you want to spend on your goal?</span></label>
 						<input id="intent-minutes" type="number" min="0.1" max="1440" step="any" required aria-describedby="intent-minutes-note">
 						<div class="quick"><button type="button" data-minutes="1"><span data-i18n="1 min">1 min</span></button><button type="button" data-minutes="5"><span data-i18n="5 min">5 min</span></button><button type="button" data-minutes="15"><span data-i18n="15 min">15 min</span></button><button type="button" data-minutes="30"><span data-i18n="30 min">30 min</span></button></div>
-						<p class="note" id="intent-minutes-note"><span data-i18n="Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.">Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.</span></p>
+						<p class="note" id="intent-minutes-note"><span class="minutes-note" data-i18n="Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.">Time in minutes. When it ends, all tabs of this site and its subdomains close in every window. Save your work first.</span></p>
 						<p class="error" role="alert" hidden></p>
 						<button class="start" type="submit"><span data-i18n="Start session">Start session</span></button>
 						<button class="close-site" type="button"><span data-i18n="Close all site tabs">Close all site tabs</span></button>
@@ -124,6 +122,10 @@
 		const backdrop = root.querySelector(".backdrop");
 		backdrop.addEventListener("cancel", event => event.preventDefault());
 		backdrop.showModal();
+		// Listed domains cover subdomains; all-sites mode times each host separately.
+		if (!current.config.sites?.includes(current.site)) {
+			root.querySelector(".minutes-note").dataset.i18n = "Time in minutes. When it ends, all tabs of this site close in every window. Save your work first.";
+		}
 		IntentI18n.localize(element, current.config.language);
 		host.lang = current.config.language; host.dir = current.config.language === "ar" ? "rtl" : "ltr";
 		root.querySelector(".site").textContent = current.site;
@@ -224,8 +226,6 @@
 			positionReminder(block);
 			if (previousFocus?.isConnected) previousFocus.focus({preventScroll: true});
 			previousFocus = null;
-			if (timerId) clearInterval(timerId);
-			timerId = setInterval(tick, 250);
 		}
 		IntentI18n.localize(root, current.config.language);
 		host.lang = current.config.language; host.dir = current.config.language === "ar" ? "rtl" : "ltr";
@@ -242,8 +242,10 @@
 		finally { checking = false; }
 	}
 	function tick() {
-		if (!current?.session || !root) return;
+		if (!current?.site) return;
+		// Pages can remove the overlay (hydration, document rewrites). Remount it in both modes.
 		if (!host?.isConnected) { render(); return; }
+		if (!current.session || mountedMode !== "timer") return;
 		const remaining = current.session.endsAt - Date.now();
 		const warning = remaining <= current.config.warningSeconds * 1000;
 		root.querySelector(".timer").textContent = core.formatTime(remaining);
@@ -266,6 +268,7 @@
 			}
 			return;
 		}
+		if (!timerId) timerId = setInterval(tick, 250);
 		if (current.session) showReminder();
 		else showForm();
 	}
