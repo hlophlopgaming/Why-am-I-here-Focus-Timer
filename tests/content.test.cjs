@@ -10,9 +10,9 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 	const makeElement = () => ({
 		handlers: {}, isConnected: true, style: {setProperty() {}}, classList: {toggle() {}},
 		addEventListener(name, handler) { (this.handlers[name] ||= []).push(handler); },
-		append() {}, remove() {}, focus() {}, showModal() {}, querySelector() { return null; }
+		append() {}, remove() {}, focus() { this.focused = true; }, showModal() {}, querySelector() { return null; }
 	});
-	for (const selector of [".backdrop", ".site", "#intent-minutes", ".settings", "form", ".error", ".start", ".close-site", "#intent-task", ".minutes-note"]) elements.set(selector, makeElement());
+	for (const selector of [".backdrop", ".site", "#intent-minutes", ".settings", "form", ".error", ".start", ".close-site", "#intent-task", ".minutes-note", ".layout-output"]) elements.set(selector, makeElement());
 	elements.get(".minutes-note").dataset = {i18n: "subdomains"};
 	elements.get("#intent-minutes").value = "15";
 	elements.get("#intent-task").value = "";
@@ -58,6 +58,12 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 	elements.get("#intent-task").value = "Read documentation";
 	elements.get("#intent-task").handlers.input[0]();
 	assert.equal(elements.get(".start").disabled, false);
+	assert.equal(elements.get("#intent-task").focused, true);
+	assert.match(root.shell.innerHTML, /autofocus/u);
+	elements.get("#intent-task").handlers.keydown[0]({key: "ф"});
+	assert.equal(elements.get(".layout-output").textContent, "RU");
+	elements.get("#intent-task").handlers.keydown[0]({key: "a"});
+	assert.equal(elements.get(".layout-output").textContent, "EN");
 
 	for (const type of ["keydown", "keyup", "keypress"]) {
 		let stopped = false;

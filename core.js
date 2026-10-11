@@ -74,6 +74,12 @@
 		if (!Number.isFinite(minutes) || minutes < 0.1 || minutes > 1440) throw new Error("Enter a time between 0.1 and 1440 minutes.");
 		return minutes;
 	}
+	function validateTask(input) {
+		const task = String(input || "").trim();
+		if (!task || task.length > 300) throw new Error("Describe your goal using 1 to 300 characters.");
+		if (/^\p{N}+$/u.test(task)) throw new Error("A goal cannot contain only numbers.");
+		return task;
+	}
 	function formatTime(milliseconds) {
 		const total = Math.max(0, Math.ceil(milliseconds / 1000));
 		const seconds = String(total % 60).padStart(2, "0");
@@ -83,7 +89,7 @@
 	function validPosition(position) {
 		return !!position && [position.x, position.y].every(value => Number.isFinite(value) && value >= 0);
 	}
-	const core = {LANGUAGES, resolveLanguage, validPosition, DEFAULTS, normalizeSite, matchesSite, parseSites, siteForUrl, validateConfig, validateMinutes, formatTime};
+	const core = {LANGUAGES, resolveLanguage, validPosition, DEFAULTS, normalizeSite, matchesSite, parseSites, siteForUrl, validateConfig, validateMinutes, validateTask, formatTime};
 	globalThis.IntentCore = core;
 	if (typeof module !== "undefined") module.exports = core;
 })();

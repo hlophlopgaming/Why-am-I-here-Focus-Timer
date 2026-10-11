@@ -211,8 +211,7 @@ async function handle(message, sender) {
 		const liveTab = await api.tabs.get(tab.id);
 		if (core.siteForUrl(liveTab.pendingUrl || liveTab.url, config) !== site) throw new Error("This tab has navigated to another site.");
 		if (sessions[site]) return stateFor(url);
-		const task = String(message.task || "").trim();
-		if (!task || task.length > 300) throw new Error("Describe your goal using 1 to 300 characters.");
+		const task = core.validateTask(message.task);
 		const minutes = core.validateMinutes(message.minutes);
 		const startedAt = Date.now();
 		sessions[site] = {site, task, startedAt, endsAt: startedAt + Math.round(minutes * 60000), warned: false};

@@ -143,6 +143,8 @@ test("domain matching includes subdomains and excludes lookalike domains", () =>
 test("validates durations and formats long sessions", () => {
 	assert.equal(core.validateMinutes("0.1"), 0.1);
 	for (const input of ["", "not-a-number", Infinity, -1, 0, 1441]) assert.throws(() => core.validateMinutes(input));
+	assert.equal(core.validateTask(" Read documentation "), "Read documentation");
+	for (const input of ["", "123", "１２３", "x".repeat(301)]) assert.throws(() => core.validateTask(input));
 	assert.equal(core.formatTime(119001), "02:00");
 	assert.equal(core.formatTime(-10), "00:00");
 	assert.equal(core.formatTime(3600000), "1:00:00");

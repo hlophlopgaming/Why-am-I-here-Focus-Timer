@@ -43,6 +43,8 @@
 		.close-site:hover { background: #ecd3d6; }
 		.note { margin: 14px 0 0; color: #64746d; font-size: 12px; }
 		.error { color: #a72c36; font-size: 13px; margin: 10px 0 0; }
+		.layout { margin: 6px 0 0; color: #64746d; font-size: 12px; text-align: end; }
+		.layout-output { font-weight: 700; color: #246650; }
 		.settings { display: block; margin: 14px auto 0; padding: 5px 8px; background: transparent; color: #63776e; font-size: 12px; }
 		.reminder { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(350px, calc(100vw - 24px)); padding: 16px 22px; border: 1px solid #c7d3cd; border-radius: 18px; color: #eef8f0; background: #203c34; box-shadow: 0 8px 32px #0002; text-align: center; pointer-events: auto; cursor: grab; touch-action: none; user-select: none; opacity: var(--intent-opacity, .4); transition: opacity .2s, background .2s; }
 		.reminder:hover, .reminder:focus-within, .reminder:active { opacity: 1; }
@@ -107,7 +109,8 @@
 					<p class="site" dir="ltr"></p>
 					<form>
 						<label for="intent-task"><span data-i18n="What do you want to do on this site?">What do you want to do on this site?</span></label>
-						<textarea id="intent-task" dir="auto" required maxlength="300" placeholder="For example, learn a new language or study a subject" data-i18n-placeholder="For example, learn a new language or study a subject"></textarea>
+						<textarea id="intent-task" dir="auto" required maxlength="300" autofocus aria-describedby="intent-layout" placeholder="For example, learn a new language or study a subject" data-i18n-placeholder="For example, learn a new language or study a subject"></textarea>
+						<p class="layout" id="intent-layout"><span data-i18n="Keyboard layout:">Keyboard layout:</span> <span class="layout-output">—</span></p>
 						<label for="intent-minutes"><span data-i18n="How much time do you want to spend on your goal?">How much time do you want to spend on your goal?</span></label>
 						<input id="intent-minutes" type="number" min="0.1" max="1440" step="any" required aria-describedby="intent-minutes-note">
 						<div class="quick"><button type="button" data-minutes="1"><span data-i18n="1 min">1 min</span></button><button type="button" data-minutes="5"><span data-i18n="5 min">5 min</span></button><button type="button" data-minutes="15"><span data-i18n="15 min">15 min</span></button><button type="button" data-minutes="30"><span data-i18n="30 min">30 min</span></button></div>
@@ -134,6 +137,11 @@
 		const startButton = root.querySelector(".start");
 		const updateStartButton = () => { startButton.disabled = !task.value.trim(); };
 		task.addEventListener("input", updateStartButton);
+		task.addEventListener("keydown", event => {
+			if (event.key.length !== 1) return;
+			const layout = /\p{Script=Cyrillic}/u.test(event.key) ? "RU" : /\p{Script=Latin}/u.test(event.key) ? "EN" : null;
+			if (layout) root.querySelector(".layout-output").textContent = layout;
+		});
 		updateStartButton();
 		minutes.value = current.config.defaultMinutes;
 		for (const button of root.querySelectorAll("[data-minutes]")) {
@@ -147,7 +155,10 @@
 			const taskValue = task.value;
 			const duration = minutes.value;
 			startButton.disabled = true;
-			try { applyState(await send({type: "START_SESSION", task: taskValue, minutes: duration})); }
+			try {
+				core.validateTask(taskValue);
+				applyState(await send({type: "START_SESSION", task: taskValue, minutes: duration}));
+			}
 			catch (error) { errorBox.textContent = t(error.message); errorBox.hidden = false; updateStartButton(); }
 		});
 		const closeButton = root.querySelector(".close-site");
