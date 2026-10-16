@@ -45,7 +45,7 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 	const intervals = [];
 	const context = vm.createContext({
 		browser, document, window: {addEventListener() {}}, console,
-		IntentCore: {}, IntentI18n: {t: text => text, localize() {}}, IntentSound: {unlock: async () => {}},
+		IntentCore: require("../core.js"), IntentI18n: {t: text => text, localize() {}}, IntentSound: {unlock: async () => {}},
 		setInterval: callback => { intervals.push(callback); return intervals.length; }, clearInterval() {}
 	});
 	vm.runInContext(fs.readFileSync(path.join(__dirname, "../content.js"), "utf8"), context);
@@ -64,6 +64,33 @@ test("the intent form keeps keyboard events away from page shortcuts", async () 
 	assert.equal(elements.get(".layout-output").textContent, "RU");
 	elements.get("#intent-task").handlers.keydown[0]({key: "a"});
 	assert.equal(elements.get(".layout-output").textContent, "EN");
+
+	const task = elements.get("#intent-task");
+	let submission;
+	elements.get("form").requestSubmit = button => {
+		assert.equal(button, elements.get(".start"));
+		submission = elements.get("form").handlers.submit[0]({preventDefault() {}});
+	};
+	const pressEnter = async (value, modifiers = {}) => {
+		task.value = value;
+		task.handlers.input[0]();
+		let prevented = false;
+		submission = null;
+		task.handlers.keydown[0]({key: "Enter", preventDefault() { prevented = true; }, ...modifiers});
+		await submission;
+		return prevented;
+	};
+	for (const value of ["", "   ", "123", "１２３"]) {
+		assert.equal(await pressEnter(value), true);
+		assert.equal(messages.some(message => message.type === "START_SESSION"), false);
+	}
+	assert.equal(await pressEnter("Read documentation", {shiftKey: true}), false, "Shift+Enter keeps the native newline");
+	assert.equal(await pressEnter("Read documentation", {isComposing: true}), false, "Enter must not submit during IME composition");
+	assert.equal(messages.some(message => message.type === "START_SESSION"), false);
+	assert.equal(await pressEnter("Read\ndocumentation"), true);
+	assert.equal(messages.at(-1).type, "START_SESSION");
+	assert.equal(messages.at(-1).task, "Read\ndocumentation");
+	assert.equal(messages.at(-1).minutes, 15);
 
 	for (const type of ["keydown", "keyup", "keypress"]) {
 		let stopped = false;

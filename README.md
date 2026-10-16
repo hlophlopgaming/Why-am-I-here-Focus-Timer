@@ -34,6 +34,9 @@ tabs, when it finishes. Save your work before starting a session.
 4. Open the extension settings, add a website, and save.
 5. Visit the website, enter a goal, and start a session.
 
+Press Enter in the goal field to start the timer, or Shift+Enter to insert a
+new line. Empty goals and goals containing only numbers are rejected.
+
 No server, dependency installation, or build step is required. Temporary
 extensions are removed when Firefox restarts. After editing the code, reload
 the extension and refresh its settings and website tabs.

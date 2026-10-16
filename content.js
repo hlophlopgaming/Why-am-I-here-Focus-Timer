@@ -138,6 +138,11 @@
 		const updateStartButton = () => { startButton.disabled = !task.value.trim(); };
 		task.addEventListener("input", updateStartButton);
 		task.addEventListener("keydown", event => {
+			if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+				event.preventDefault();
+				if (!startButton.disabled) root.querySelector("form").requestSubmit(startButton);
+				return;
+			}
 			if (event.key.length !== 1) return;
 			const layout = /\p{Script=Cyrillic}/u.test(event.key) ? "RU" : /\p{Script=Latin}/u.test(event.key) ? "EN" : null;
 			if (layout) root.querySelector(".layout-output").textContent = layout;
